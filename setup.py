@@ -7,6 +7,8 @@ setup(
     name="ccsdoc",
     version="0.0.1",
     description="Parser tools for generating CCS Java documentation",
+    long_description=open('README.md').read(),
+    long_description_content_type="text/markdown",
     author="Alexandre Boucaud",
     author_email="aboucaud@apc.in2p3.fr",
     packages=find_packages(),
