@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="ccsdoc",
-    version="0.0.2",
+    version="0.0.3",
     description="Parser tools for generating CCS Java documentation",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
@@ -16,10 +16,11 @@ setup(
     python_requires='>=3.6',
     install_requires = [
         "click",
+        "pandas",
     ],
     entry_points = {
         "console_scripts": [
-            "parse-commands = ccsdoc.scripts.cli:cli",
+            "ccsdoc = ccsdoc.scripts.cli:cli",
         ],
     },
     zip_safe=False,
