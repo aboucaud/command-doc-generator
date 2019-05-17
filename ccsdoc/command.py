@@ -8,6 +8,8 @@ COMMAND_ARGS = [
     "description",
 ]
 
+CSV_HEADER = "class,name,type,level,description\n"
+
 class Command:
     def __init__(self, name, cmdtype, level, description):
         self.name = name
@@ -25,6 +27,16 @@ class Command:
             f"type={self.type}, "
             f"level={self.level}, "
             f"desc={self.description})"
+        )
+
+    def to_csv(self, java_class_name):
+        return (
+            f"{java_class_name},"
+            f"{self.name},"
+            f"{self.type},"
+            f"{self.level},"
+            f"{self.description}"
+            "\n"
         )
 
 
@@ -50,4 +62,4 @@ def clean_description(text):
     text = text.replace('" + "', '')
     text = text.replace('"+ "', '')
     text = text.replace('" +"', '')
-    return text
+    return text.capitalize()
