@@ -56,7 +56,7 @@ def cli(path, output):
         output = pathlib.Path(output)
         if output.exists():
             import sys
-            sys.exit("Ouput file already exists, cancelling action.")
+            sys.exit("Output file already exists, cancelling action.")
         output.write_text(CSV_HEADER)
 
     if not path.is_dir():
