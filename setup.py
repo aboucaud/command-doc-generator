@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="ccsdoc",
-    version="0.0.1",
+    version="0.0.2",
     description="Parser tools for generating CCS Java documentation",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
