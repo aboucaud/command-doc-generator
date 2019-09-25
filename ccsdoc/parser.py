@@ -1,26 +1,40 @@
-from typing import List, Dict
+from typing import List, Tuple
 from pathlib import Path
 
 from ccsdoc.command import Command
-from ccsdoc.command import is_correct_entry
+from ccsdoc.command import is_command
+from ccsdoc.command import extract_command_name
+from ccsdoc.command import extract_command_arguments
+from ccsdoc.parameter import ConfigParameter
+from ccsdoc.parameter import is_config_parameter
+from ccsdoc.parameter import extract_parameter_name
+from ccsdoc.parameter import extract_parameter_arguments
 
 
-def parse_file(filepath: Path) -> List[Command]:
+def parse_file(filepath: Path) -> Tuple[List[Command], List[ConfigParameter]]:
     text = filepath.read_text()
 
     lines = split_and_remove_whitespace(text)
 
-    command_idx = get_command_position(lines)
-
     commands = []
-    for idx in command_idx:
+    for idx in get_command_position(lines):
         try:
             command = extract_command_info(lines, idx)
             commands.append(command)
         except Exception as e:
             print(f"=> {filepath}: issue at line {idx}: {e}")
 
-    return commands
+    params = []
+    for idx in get_param_position(lines):
+        try:
+            parameter = extract_param_info(lines, idx)
+            if parameter.deprecated:
+                continue
+            params.append(parameter)
+        except Exception as e:
+            print(f"=> {filepath}: issue at line {idx}: {e}")
+
+    return commands, params
 
 
 def split_and_remove_whitespace(text: str) -> List[str]:
@@ -28,60 +42,21 @@ def split_and_remove_whitespace(text: str) -> List[str]:
 
 
 def get_command_position(lines: List[str]) -> List[int]:
-    return [idx for idx, line in enumerate(lines) if line.startswith("@Command")]
+    return [idx for idx, line in enumerate(lines) if is_command(line)]
 
 
-def extract_command_name(line: str) -> str:
-    # Use the method call to break the string
-    before_call = line.split("(")[0]
-    # The remaining text should end with the method_name
-    *_, method_name = before_call.split()
-
-    return method_name
-
-
-def extract_command_arguments(decorator: str) -> Dict[str, str]:
-    # Remove the @Command(...)
-    content = decorator[9:-1]
-
-    # Separate arguments
-    entries = content.split(",")
-
-    # Use '=' as an indicator of the number of arguments
-    # (will fail if '=' present in the command description)
-    n_entries = content.count("=")
-    n_splits = content.count(",")
-
-    if n_splits >= n_entries:
-        new_entries = []
-        for entry in entries:
-            if is_correct_entry(entry):
-                new_entries.append(entry)
-            else:
-                new_entries[-1] += entry
-        entries = new_entries
-
-    # Extract the arguments in a dictionary
-    args = {}
-    for entry in entries:
-        arg, value = entry.split("=")
-        args[arg.strip()] = value.strip()
-
-    for key in ["type", "level", "description"]:
-        if key not in list(args.keys()):
-            raise ValueError(f"Missing command argument '{key}'.")
-
-    return args
+def get_param_position(lines: List[str]) -> List[int]:
+    return [idx for idx, line in enumerate(lines) if is_config_parameter(line)]
 
 
 def extract_command_info(lines: List[str], idx: int) -> Command:
     # Command decorator
-    cmd = lines[idx]
-    while not cmd.endswith(")"):
+    cmd_decorator = lines[idx]
+    while not cmd_decorator.endswith(")"):
         idx += 1
-        cmd += lines[idx]
+        cmd_decorator += lines[idx]
 
-    command_dict = extract_command_arguments(cmd)
+    command_dict = extract_command_arguments(cmd_decorator)
 
     # Method definition
     method_id = idx + 1
@@ -94,7 +69,31 @@ def extract_command_info(lines: List[str], idx: int) -> Command:
 
     return Command(
         name=command_name,
-        cmdtype=command_dict["type"],
-        level=command_dict["level"],
-        description=command_dict["description"],
+        cmdtype=command_dict.get("type", ""),
+        level=command_dict.get("level", ""),
+        description=command_dict.get("description", ""),
+    )
+
+
+def extract_param_info(lines: List[str], idx: int) -> ConfigParameter:
+    # Verify if the parameter is deprecated
+    deprecated = "@Deprecated" in lines[idx - 1]
+
+    param_decorator = lines[idx]
+    if "(" in param_decorator:
+        while not param_decorator.endswith(")"):
+            idx += 1
+            param_decorator += lines[idx]
+
+        param_dict = extract_parameter_arguments(param_decorator)
+    else:
+        param_dict = {}
+
+    definition = lines[idx + 1]
+    param_name = extract_parameter_name(definition)
+
+    return ConfigParameter(
+        name=param_name,
+        description=param_dict.get("description", " "),
+        deprecated=deprecated,
     )
