@@ -4,13 +4,15 @@ from tempfile import mkstemp
 from pathlib import Path
 
 import click
-from pandas import read_csv, DataFrame  # type: ignore
+from pandas import read_csv, DataFrame, set_option  # type: ignore
+
+# Avoid pandas truncation of the commands description
+set_option("display.max_colwidth", -1)
 
 
 def convert_dataframe(dataframe: DataFrame, output: Path) -> None:
     """Convert a pandas DataFrame to another table format"""
     file_format = output.suffix[1:]
-    # file_format = output.suffix
     try:
         # Create temporary file to store HTML table
         tempf, temporary_file = mkstemp(text=True)
@@ -46,8 +48,9 @@ def select_and_convert(df: DataFrame, csv_file: Path, ext: str, cmd_type=None) -
     show_default=True,
     help="Output file extension.",
 )
+@click.option("--sort", is_flag=True, help="Orders commands alphabetically.")
 @click.option("--split", is_flag=True, help="Splits the output into actions and queries.")
-def main(csv_file, extension, split):
+def main(csv_file, extension, split, sort):
     input_file = Path(csv_file)
 
     commands: DataFrame = read_csv(input_file)
@@ -56,6 +59,9 @@ def main(csv_file, extension, split):
     commands.replace("ENGINEERING1", "ENG1", inplace=True)
     commands.replace("ENGINEERING2", "ENG2", inplace=True)
     commands.replace("ENGINEERING3", "ENG3", inplace=True)
+
+    if sort:
+        commands.sort_values("class", inplace=True)
 
     if split:
         select_and_convert(commands, input_file, extension, cmd_type='action')

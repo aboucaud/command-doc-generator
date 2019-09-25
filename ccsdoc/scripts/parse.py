@@ -1,10 +1,11 @@
 from enum import Enum
-from typing import List, Optional, Iterator
+from typing import List, Optional, Iterator, Union
 from pathlib import Path
 import click
 
 from ccsdoc.parser import parse_file
-from ccsdoc.command import Command, CSV_HEADER
+from ccsdoc.command import Command, COMMAND_HEADER
+from ccsdoc.parameter import ConfigParameter, PARAM_HEADER
 
 
 class Color(Enum):
@@ -21,26 +22,33 @@ class Color(Enum):
 
 
 def process_commands(filepath: Path, output: Optional[Path] = None) -> None:
-    commands: List[Command] = parse_file(filepath)
+    commands, parameters = parse_file(filepath)
     class_name = filepath.stem
-    if commands:
+    if commands or parameters:
         if output is None:
-            print_file_commands(commands, class_name)
+            print_info(commands, parameters, class_name)
         else:
-            save_file_commands(output, commands, class_name)
+            if commands:
+                cmd_out = output.joinpath(output.name + "_cmd.csv")
+                save_to_file(cmd_out, commands, class_name)
+            if parameters:
+                param_out = output.joinpath(output.name + "_param.csv")
+                save_to_file(param_out, parameters, class_name)
 
 
-def print_file_commands(commands: List[Command], class_name: str) -> None:
+def print_info(commands: List[Command], parameters: List[ConfigParameter], class_name: str) -> None:
     print(f"{Color.BOLD.value}{class_name}:{Color.END.value}")
     for command in commands:
         print(command)
+    for param in parameters:
+        print(param)
     print("")
 
 
-def save_file_commands(output: Path, commands: List[Command], class_name: str) -> None:
+def save_to_file(output: Path, infos: Union[List[Command], List[ConfigParameter]], class_name: str) -> None:
     with output.open("a") as f:
-        for command in commands:
-            f.write(command.to_csv(class_name))
+        for info in infos:
+            f.write(info.to_csv(class_name))
 
 
 @click.command("parse")
@@ -54,7 +62,7 @@ def save_file_commands(output: Path, commands: List[Command], class_name: str) -
 @click.option(
     "--to",
     "output",
-    type=click.Path(dir_okay=False),
+    type=click.Path(dir_okay=True),
     default=None,
     show_default=True,
     help="If specified, produces a CSV catalogue of the available commands.",
@@ -66,9 +74,13 @@ def main(path: Path, output: Path):
         output = Path(output)
         if output.exists():
             import sys
+            sys.exit("Output dir already exists, cancelling action.")
 
-            sys.exit("Output file already exists, cancelling action.")
-        output.write_text(CSV_HEADER)
+        output.mkdir()
+        cmd_out = output.joinpath(output.name + "_cmd.csv")
+        cmd_out.write_text(COMMAND_HEADER)
+        param_out = output.joinpath(output.name + "_param.csv")
+        param_out.write_text(PARAM_HEADER)
 
     if not path.is_dir():
         process_commands(path, output)
