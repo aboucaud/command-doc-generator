@@ -6,6 +6,9 @@ List the available commands information such as the name, the level, the type an
 
 Usage
 -----
+
+#### parse
+
 Use the command-line tool `ccsdoc` to list the commands either on a given file or in a directory.
 
 - on a single file
@@ -22,7 +25,9 @@ Commands can be output to a CSV file.
 ccsdoc parse --path JavaFile.java --to javafile_commands.csv
 ```
 
-Finally the CSV table with the commands can be converted to the desired format using [`pandoc`][pandoc]
+#### convert
+
+The CSV table containing the commands can be converted to the desired format using [`pandoc`][pandoc]
 ```
 # e.g. here to Microsoft Word
 ccsdoc convert javafile_commands.csv --to docx
