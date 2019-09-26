@@ -16,8 +16,8 @@ def convert_dataframe(dataframe: DataFrame, output: Path) -> None:
     try:
         # Create temporary file to store HTML table
         tempf, temporary_file = mkstemp(text=True)
-        with open(tempf, "w") as tf:
-            dataframe.to_html(buf=tf, index=False)
+        with open(tempf, "w") as tempfile:
+            dataframe.to_html(buf=tempfile, index=False)
         # Use pandoc to convert from HTML to DOCX
         cmd = f"pandoc --from=html --to={file_format} -o {output} {temporary_file}"
         print(cmd)
