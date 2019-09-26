@@ -4,9 +4,13 @@ from pathlib import Path
 from ccsdoc.command import Command
 from ccsdoc.argument import Argument
 from ccsdoc.parameter import ConfigParameter
-from ccsdoc.parameter import is_config_parameter
-from ccsdoc.parameter import extract_parameter_name
-from ccsdoc.parameter import extract_parameter_arguments
+from ccsdoc.text import is_command
+from ccsdoc.text import is_config_parameter
+from ccsdoc.text import extract_command_name
+from ccsdoc.text import extract_command_arguments
+from ccsdoc.text import extract_method_arguments
+from ccsdoc.text import extract_parameter_name
+from ccsdoc.text import extract_parameter_arguments
 
 
 def parse_file(filepath: Path) -> Tuple[List[Command], List[ConfigParameter]]:
