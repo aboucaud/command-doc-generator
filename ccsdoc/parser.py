@@ -2,9 +2,7 @@ from typing import List, Tuple
 from pathlib import Path
 
 from ccsdoc.command import Command
-from ccsdoc.command import is_command
-from ccsdoc.command import extract_command_name
-from ccsdoc.command import extract_command_arguments
+from ccsdoc.argument import Argument
 from ccsdoc.parameter import ConfigParameter
 from ccsdoc.parameter import is_config_parameter
 from ccsdoc.parameter import extract_parameter_name
@@ -66,12 +64,18 @@ def extract_command_info(lines: List[str], idx: int) -> Command:
         method = lines[method_id]
 
     command_name = extract_command_name(method)
+    argument_dict = extract_method_arguments(method)
+    arguments = [
+        Argument(name, type_)
+        for name, type_ in argument_dict.items()
+    ]
 
     return Command(
         name=command_name,
         cmdtype=command_dict.get("type", ""),
         level=command_dict.get("level", ""),
         description=command_dict.get("description", ""),
+        args=arguments,
     )
 
 
