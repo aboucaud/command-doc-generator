@@ -14,9 +14,10 @@ class ConfigParameter:
 
     def __str__(self) -> str:
         return (
-            f"{self.__class__.__name__}("
+            f"{self.__class__.__name__}["
             f"name={self.name}, "
-            f"desc={self.description})"
+            f"desc='{self.description}'"
+            "]"
         )
 
     def to_csv(self, class_name: str) -> str:

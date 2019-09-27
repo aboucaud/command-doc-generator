@@ -39,6 +39,6 @@ class Command:
             f"{self.type},"
             f"{self.level},"
             f"{self.description},"
-            f"{';'.join([repr(arg for arg in self.args)])}"
+            f"{';'.join([repr(arg) for arg in self.args])}"
             "\n"
         )

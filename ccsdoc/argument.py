@@ -16,8 +16,9 @@ class Argument:
 
     def __str__(self):
         return (
-            f"{self.__class__.__name__}("
+            f"{self.__class__.__name__}["
             f"name={self.name}"
             f", type={self.type}"
             f"{', desc=' + self.description if self.description else ''}"
+            "]"
         )
