@@ -1,5 +1,4 @@
-from typing import List, Tuple
-from pathlib import Path
+from typing import List, Tuple, Optional
 
 from ccsdoc.command import Command
 from ccsdoc.argument import Argument
@@ -13,18 +12,22 @@ from ccsdoc.text import extract_parameter_name
 from ccsdoc.text import extract_parameter_arguments
 
 
-def parse_file(filepath: Path) -> Tuple[List[Command], List[ConfigParameter]]:
-    text = filepath.read_text()
-
-    lines = split_and_remove_whitespace(text)
+def parse_raw_text(
+        raw_text: str, filename: Optional[str] = None
+    ) -> Tuple[List[Command], List[ConfigParameter]]:
+    """Parse text directly from Java file"""
+    lines = split_and_remove_whitespace(raw_text)
 
     commands = []
     for idx in get_command_position(lines):
         try:
             command = extract_command_info(lines, idx)
             commands.append(command)
-        except Exception as e:
-            print(f"=> {filepath}: issue at line {idx}: {e}")
+        except Exception as expt:
+            print(
+                f"=> {filename + ': ' if filename else ''}"
+                f"command issue at line {idx}: {expt}"
+            )
 
     params = []
     for idx in get_param_position(lines):
@@ -33,25 +36,32 @@ def parse_file(filepath: Path) -> Tuple[List[Command], List[ConfigParameter]]:
             if parameter.deprecated:
                 continue
             params.append(parameter)
-        except Exception as e:
-            print(f"=> {filepath}: issue at line {idx}: {e}")
+        except Exception as expt:
+            print(
+                f"=> {filename + ': ' if filename else ''}",
+                f"config parameter issue at line {idx}: {expt}"
+            )
 
     return commands, params
 
 
 def split_and_remove_whitespace(text: str) -> List[str]:
+    """Convert raw text to list of line strings"""
     return [line.strip() for line in text.split("\n")]
 
 
 def get_command_position(lines: List[str]) -> List[int]:
+    """Get line numbers of @Commands"""
     return [idx for idx, line in enumerate(lines) if is_command(line)]
 
 
 def get_param_position(lines: List[str]) -> List[int]:
+    """Get line numbers of @ConfigParameters"""
     return [idx for idx, line in enumerate(lines) if is_config_parameter(line)]
 
 
 def extract_command_info(lines: List[str], idx: int) -> Command:
+    """Create a Command instance from text"""
     # Command decorator
     cmd_decorator = lines[idx]
     while not cmd_decorator.endswith(")"):
@@ -84,6 +94,7 @@ def extract_command_info(lines: List[str], idx: int) -> Command:
 
 
 def extract_param_info(lines: List[str], idx: int) -> ConfigParameter:
+    """Create a ConfigParameter instance from text"""
     # Verify if the parameter is deprecated
     deprecated = "@Deprecated" in lines[idx - 1]
 

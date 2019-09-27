@@ -3,7 +3,7 @@ from typing import List, Optional, Iterator, Union
 from pathlib import Path
 import click
 
-from ccsdoc.parser import parse_file
+from ccsdoc.parser import parse_raw_text
 from ccsdoc.command import Command, COMMAND_HEADER
 from ccsdoc.parameter import ConfigParameter, PARAM_HEADER
 
@@ -22,7 +22,7 @@ class Color(Enum):
 
 
 def process_commands(filepath: Path, output: Optional[Path] = None) -> None:
-    commands, parameters = parse_file(filepath)
+    commands, parameters = parse_raw_text(filepath.read_text(), filepath.name)
     class_name = filepath.stem
     if commands or parameters:
         if output is None:
