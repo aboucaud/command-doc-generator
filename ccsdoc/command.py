@@ -32,6 +32,9 @@ class Command:
             "]"
         )
 
+    def __eq__(self, other):
+        return str(self) == str(other)
+
     def to_csv(self, class_name: str) -> str:
         return (
             f"{class_name},"
