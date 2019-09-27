@@ -1,2 +1,2 @@
 [run]
-omit = ccsdoc/tests/*
+omit = ccsdoc/tests/*, ccsdoc/scripts/*
