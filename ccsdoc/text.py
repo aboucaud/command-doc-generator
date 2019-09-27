@@ -6,10 +6,12 @@ PARAM_ARGS: List[str] = ["description", "range", "category", "is_final"]
 
 
 def is_command(line: str) -> bool:
+    """Does the line refer to a command"""
     return line.startswith("@Command")
 
 
 def is_correct_command_entry(text: str) -> bool:
+    """Is the keyword a valid command argument"""
     for arg in COMMAND_ARGS:
         if text.strip().startswith(arg):
             return True
@@ -18,10 +20,12 @@ def is_correct_command_entry(text: str) -> bool:
 
 
 def clean_command_level(text: str) -> str:
+    """Remove parents from the command level"""
     return text.replace("Command.", "")
 
 
 def clean_command_type(text: str) -> str:
+    """Remove parents from the command type"""
     text = text.replace("Command.", "")
     text = text.replace("CommandType.", "")
 
@@ -29,6 +33,7 @@ def clean_command_type(text: str) -> str:
 
 
 def clean_description(text: str) -> str:
+    """Format description to linearize it from multiline definition"""
     if text.startswith('"'):
         text = text[1:]
     if text.endswith('"'):
@@ -46,6 +51,7 @@ def clean_description(text: str) -> str:
 
 
 def extract_command_name(line: str) -> str:
+    """Read command name from text"""
     # Use the method call to break the string
     before_call = line.split("(")[0]
     # The remaining text should end with the method_name
@@ -55,6 +61,7 @@ def extract_command_name(line: str) -> str:
 
 
 def extract_method_arguments(line: str) -> Dict[str, str]:
+    """Read method arguments from text"""
     # Use the method call to break the string
     arguments_str = line.split("(")[1].split(")")[0]
 
@@ -70,6 +77,7 @@ def extract_method_arguments(line: str) -> Dict[str, str]:
 
 
 def extract_command_arguments(decorator: str) -> Dict[str, str]:
+    """Read command arguments from text"""
     # Remove the @Command(...)
     content = decorator[9:-1]
 
@@ -104,6 +112,7 @@ def extract_command_arguments(decorator: str) -> Dict[str, str]:
 
 
 def is_correct_parameter_entry(text: str) -> bool:
+    """Is the keyword a valid configuration parameter argument"""
     for arg in PARAM_ARGS:
         if text.strip().startswith(arg):
             return True
@@ -112,10 +121,12 @@ def is_correct_parameter_entry(text: str) -> bool:
 
 
 def is_config_parameter(line: str) -> bool:
+    """Does the line refer to a configuration parameter"""
     return line.startswith("@ConfigurationParameter") and not line.endswith("Changer")
 
 
 def extract_parameter_name(line: str) -> str:
+    """Read configuration parameter name from text"""
     # Remove default value if any
     line, *_ = line.split("=")
     # Parameter is now the last entry of the line
@@ -128,6 +139,7 @@ def extract_parameter_name(line: str) -> str:
 
 
 def extract_parameter_arguments(decorator: str) -> Dict[str, str]:
+    """Read configuration parameter arguments from text"""
     # Remove the @ConfigurationParameter(...)
     content = decorator[24:-1]
 
