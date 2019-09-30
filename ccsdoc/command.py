@@ -32,7 +32,7 @@ class Command:
             "]"
         )
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return str(self) == str(other)
 
     def to_csv(self, class_name: str) -> str:
