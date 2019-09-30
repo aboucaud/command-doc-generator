@@ -1,5 +1,5 @@
 from ccsdoc.command import Command
-from ccsdoc.argument import Argument
+from ccsdoc.parameter import Argument
 
 NAME = "setFilter"
 TYPE = "ACTION"

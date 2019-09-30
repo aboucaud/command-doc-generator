@@ -1,20 +1,20 @@
 from typing import List, Tuple, Optional
 
 from ccsdoc.command import Command
-from ccsdoc.argument import Argument
-from ccsdoc.parameter import ConfigParameter
+from ccsdoc.parameter import Argument
+from ccsdoc.parameter import ConfigurationParameter
 from ccsdoc.text import is_command
 from ccsdoc.text import is_config_parameter
 from ccsdoc.text import extract_command_name
 from ccsdoc.text import extract_command_arguments
 from ccsdoc.text import extract_method_arguments
-from ccsdoc.text import extract_parameter_name
+from ccsdoc.text import extract_parameter_name_and_type
 from ccsdoc.text import extract_parameter_arguments
 
 
 def parse_raw_text(
         raw_text: str, filename: Optional[str] = None
-    ) -> Tuple[List[Command], List[ConfigParameter]]:
+    ) -> Tuple[List[Command], List[ConfigurationParameter]]:
     """Parse text directly from Java file"""
     lines = split_and_remove_whitespace(raw_text)
 
@@ -56,7 +56,7 @@ def get_command_position(lines: List[str]) -> List[int]:
 
 
 def get_param_position(lines: List[str]) -> List[int]:
-    """Get line numbers of @ConfigParameters"""
+    """Get line numbers of @ConfigurationParameters"""
     return [idx for idx, line in enumerate(lines) if is_config_parameter(line)]
 
 
@@ -93,8 +93,8 @@ def extract_command_info(lines: List[str], idx: int) -> Command:
     )
 
 
-def extract_param_info(lines: List[str], idx: int) -> ConfigParameter:
-    """Create a ConfigParameter instance from text"""
+def extract_param_info(lines: List[str], idx: int) -> ConfigurationParameter:
+    """Create a ConfigurationParameter instance from text"""
     # Verify if the parameter is deprecated
     deprecated = "@Deprecated" in lines[idx - 1]
 
@@ -109,10 +109,11 @@ def extract_param_info(lines: List[str], idx: int) -> ConfigParameter:
         param_dict = {}
 
     definition = lines[idx + 1]
-    param_name = extract_parameter_name(definition)
+    param_name, ptype = extract_parameter_name_and_type(definition)
 
-    return ConfigParameter(
+    return ConfigurationParameter(
         name=param_name,
+        ptype=ptype,
         description=param_dict.get("description", " "),
-        deprecated=deprecated,
+        is_deprecated=deprecated,
     )

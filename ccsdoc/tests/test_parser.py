@@ -1,6 +1,6 @@
-from ccsdoc.argument import Argument
 from ccsdoc.command import Command
-from ccsdoc.parameter import ConfigParameter
+from ccsdoc.parameter import Argument
+from ccsdoc.parameter import ConfigurationParameter
 from ccsdoc.parser import extract_command_info
 from ccsdoc.parser import extract_param_info
 from ccsdoc.parser import get_command_position
@@ -137,9 +137,9 @@ def test_extract_param_info_no_args():
     input_ = ["", CONFIG_PARAM_NO_ARGS, "public void myParam"]
     param_position = 1
     result = extract_param_info(input_, param_position)
-    expected = ConfigParameter(
+    expected = ConfigurationParameter(
         name="myParam",
-        description=" "
+        ptype="void"
     )
     assert result == expected
 
@@ -147,8 +147,9 @@ def test_extract_param_info_basic():
     input_ = [CONFIG_PARAM_WITH_ARGS, "private int myParam"]
     param_position = 0
     result = extract_param_info(input_, param_position)
-    expected = ConfigParameter(
+    expected = ConfigurationParameter(
         name="myParam",
+        ptype="int",
         description="In milliseconds; if rotation lasts more than rotationTimeout rotation is halted and the subsystem goes in error state."
     )
     assert result == expected
@@ -157,8 +158,9 @@ def test_extract_param_info_multiline():
     input_ = CONFIG_PARAM_MULTILINE + ["private int myParam"]
     param_position = 0
     result = extract_param_info(input_, param_position)
-    expected = ConfigParameter(
+    expected = ConfigurationParameter(
         name="myParam",
+        ptype="int",
         description="In milliseconds; if rotation lasts more than rotationTimeout rotation is halted and the subsystem goes in error state."
     )
     assert result == expected
@@ -168,8 +170,9 @@ def test_extract_param_info_real():
     input_ = SPACED_TEXT_CLEANED
     param_position = 2
     result = extract_param_info(input_, param_position)
-    expected = ConfigParameter(
+    expected = ConfigurationParameter(
         name="deltaPosition",
+        ptype="int",
         description="Position margin to terminate movement."
     )
     assert result == expected
@@ -183,7 +186,7 @@ def test_parse_raw_text():
         )
     ]
     expected_parameters = [
-        ConfigParameter(name="deltaPosition", description="Position margin to terminate movement.")
+        ConfigurationParameter(name="deltaPosition", ptype="int", description="Position margin to terminate movement.")
     ]
     res_commands, res_parameters = parse_raw_text(SPACED_TEXT_RAW)
 

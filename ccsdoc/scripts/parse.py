@@ -5,7 +5,7 @@ import click
 
 from ccsdoc.parser import parse_raw_text
 from ccsdoc.command import Command, COMMAND_HEADER
-from ccsdoc.parameter import ConfigParameter, PARAM_HEADER
+from ccsdoc.parameter import ConfigurationParameter, PARAM_HEADER
 
 
 class Color(Enum):
@@ -36,7 +36,7 @@ def process_commands(filepath: Path, output: Optional[Path] = None) -> None:
                 save_to_file(param_out, parameters, class_name)
 
 
-def print_info(commands: List[Command], parameters: List[ConfigParameter], class_name: str) -> None:
+def print_info(commands: List[Command], parameters: List[ConfigurationParameter], class_name: str) -> None:
     print(f"{Color.BOLD.value}{class_name}:{Color.END.value}")
     for command in commands:
         print(command)
@@ -45,7 +45,7 @@ def print_info(commands: List[Command], parameters: List[ConfigParameter], class
     print("")
 
 
-def save_to_file(output: Path, infos: Union[List[Command], List[ConfigParameter]], class_name: str) -> None:
+def save_to_file(output: Path, infos: Union[List[Command], List[ConfigurationParameter]], class_name: str) -> None:
     with output.open("a") as f:
         for info in infos:
             f.write(info.to_csv(class_name))

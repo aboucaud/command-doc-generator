@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 COMMAND_ARGS: List[str] = ["type", "level", "alias", "description", "autoAck", "timeout"]
 MANDATORY_COMMAND_ARGS: List[str] = ["type", "level", "description"]
@@ -125,17 +125,19 @@ def is_config_parameter(line: str) -> bool:
     return line.startswith("@ConfigurationParameter") and not line.endswith("Changer")
 
 
-def extract_parameter_name(line: str) -> str:
+def extract_parameter_name_and_type(line: str) -> Tuple[str]:
     """Read configuration parameter name from text"""
     # Remove default value if any
     line, *_ = line.split("=")
-    # Parameter is now the last entry of the line
-    *_, parameter = line.strip().split(" ")
-    # Remove the final ;
-    if parameter.endswith(";"):
-        parameter = parameter[:-1]
+    line = line.strip()
 
-    return parameter
+    # Parameter is now the last entry of the line
+    *_, type_, param_name = line.strip().split()
+    # Remove the final ;
+    if param_name.endswith(";"):
+        param_name = param_name[:-1]
+
+    return param_name, type_
 
 
 def extract_parameter_arguments(decorator: str) -> Dict[str, str]:

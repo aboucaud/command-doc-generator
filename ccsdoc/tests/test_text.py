@@ -7,7 +7,7 @@ from ccsdoc.text import extract_command_arguments
 from ccsdoc.text import extract_command_name
 from ccsdoc.text import extract_method_arguments
 from ccsdoc.text import extract_parameter_arguments
-from ccsdoc.text import extract_parameter_name
+from ccsdoc.text import extract_parameter_name_and_type
 from ccsdoc.text import is_command
 from ccsdoc.text import is_config_parameter
 from ccsdoc.text import is_correct_command_entry
@@ -124,9 +124,9 @@ def test_extract_method_arguments_multiple_args():
     assert res_multiple_arg == {"filterID": "int", "isTrue": "boolean"}
 
 
-def test_extract_parameter_name():
-    assert extract_parameter_name(PARAM_NAME) == "standbyPosition"
-    assert extract_parameter_name(PARAM_NAME_WITH_DEFAULT_VALUE) == "onlinePosition"
+def test_extract_parameter_name_and_type():
+    assert extract_parameter_name_and_type(PARAM_NAME) == ("standbyPosition", "int")
+    assert extract_parameter_name_and_type(PARAM_NAME_WITH_DEFAULT_VALUE) == ("onlinePosition", "int")
 
 
 def test_extract_parameters_arguments():

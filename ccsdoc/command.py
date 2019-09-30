@@ -1,6 +1,6 @@
 from typing import List, Dict, Optional
 
-from ccsdoc.argument import Argument
+from ccsdoc.parameter import Argument
 from ccsdoc.text import clean_command_type
 from ccsdoc.text import clean_command_level
 from ccsdoc.text import clean_description
