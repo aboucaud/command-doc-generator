@@ -60,6 +60,9 @@ def main(csv_file, extension, split, sort):
     commands.replace("ENGINEERING2", "ENG2", inplace=True)
     commands.replace("ENGINEERING3", "ENG3", inplace=True)
 
+    # Replace NaN with blank space
+    commands.fillna("", inplace=True)
+
     if sort:
         commands.sort_values("class", inplace=True)
 
