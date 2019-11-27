@@ -1,8 +1,15 @@
 CCS command documentation helper
 ================================
 
+[![License][license-badge]][license-web]
+[![CI][ci-badge]][ci-web]
+
 List the available commands information such as the name, the level, the type and the description.
 
+[ci-web]: https://github.com/aboucaud/command-doc-generator/actions
+[ci-badge]: https://github.com/aboucaud/command-doc-generator/workflows/test%20suite/badge.svg?style=flat
+[license-badge]: https://img.shields.io/badge/license-BSD-blue.svg?style=flat
+[license-web]: https://choosealicense.com/licenses/bsd-3-clause/
 
 Usage
 -----
