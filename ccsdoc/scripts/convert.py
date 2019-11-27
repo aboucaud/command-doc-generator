@@ -35,7 +35,7 @@ def clean_column(df: DataFrame, column_name: str) -> DataFrame:
         if df[column_name].isna().all():
             df = df.drop(columns=column_name)
         else:
-            df.fillna('', inplace=True)
+            df = df.fillna("")
 
     return df
 
@@ -49,8 +49,8 @@ def convert_dataframe(dataframe: DataFrame, output: Path) -> None:
         with open(tmpfile_ref, "w") as buffer:
             for header, df in parse_dataframe_by_class_and_level(dataframe, buffer):
                 print(header, file=buffer)
-                clean_column(df, 'arguments')
-                clean_column(df, 'description')
+                df = clean_column(df, 'arguments')
+                df = clean_column(df, 'description')
                 df.sort_values('name', inplace=True)
                 df.to_html(buf=buffer, index=False)
         # Use pandoc to convert from HTML to DOCX
@@ -65,18 +65,21 @@ def convert_dataframe(dataframe: DataFrame, output: Path) -> None:
 
 
 def select_and_convert(df: DataFrame, csv_file: Path, ext: str, cmd_type=None) -> None:
-    # ConfigurationParameters
-    if 'level' in df.columns:
-        cmd_type = None
-
-    if cmd_type is not None and cmd_type.upper() in ['QUERY', 'ACTION']:
-        df = df.query(f"type == '{cmd_type.upper()}'")
-        df = df.drop(columns="type")
+    if cmd_type is not None:
+        df = _select_cmd_type(df, cmd_type)
 
     suffix = f".{ext}" if cmd_type is None else f"_{cmd_type.lower()}.{ext}"
     output = csv_file.with_name(csv_file.stem + suffix)
 
     convert_dataframe(df, output)
+
+
+def _select_cmd_type(df: DataFrame, cmd_type: str) -> DataFrame:
+    """Select a specific type of commands"""
+    df = df.query(f"type == '{cmd_type.upper()}'")
+    df = df.drop(columns="type")
+
+    return df
 
 
 @click.command("convert")
@@ -94,10 +97,10 @@ def select_and_convert(df: DataFrame, csv_file: Path, ext: str, cmd_type=None) -
 def main(csv_file, extension, split, sort):
     input_file = Path(csv_file)
 
-    commands: DataFrame = pd.read_csv(input_file)
+    df_cmd: DataFrame = pd.read_csv(input_file)
 
-    if split:
-        select_and_convert(commands, input_file, extension, cmd_type='action')
-        select_and_convert(commands, input_file, extension, cmd_type='query')
+    if split and 'level' in df_cmd.columns:
+        select_and_convert(df_cmd, input_file, extension, cmd_type='action')
+        select_and_convert(df_cmd, input_file, extension, cmd_type='query')
     else:
-        select_and_convert(commands, input_file, extension)
+        select_and_convert(df_cmd, input_file, extension)
