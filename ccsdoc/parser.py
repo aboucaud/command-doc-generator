@@ -14,7 +14,7 @@ from ccsdoc.text import extract_parameter_arguments
 
 def parse_raw_text(
         raw_text: str, filename: Optional[str] = None
-    ) -> Tuple[List[Command], List[ConfigurationParameter]]:
+        ) -> Tuple[List[Command], List[ConfigurationParameter]]:
     """Parse text directly from Java file"""
     lines = split_and_remove_whitespace(raw_text)
 

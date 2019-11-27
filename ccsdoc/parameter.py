@@ -51,7 +51,6 @@ class ConfigurationParameter(Parameter):
         return super().__str__()
 
 
-
 class Argument(Parameter):
     def __init__(self, name: str, ptype: str) -> None:
         Parameter.__init__(self, name, ptype, description=None)

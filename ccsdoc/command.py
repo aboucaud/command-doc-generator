@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import List, Optional
 
 from ccsdoc.parameter import Argument
 from ccsdoc.text import clean_command_type
