@@ -1,13 +1,43 @@
 import os
 import subprocess
-from tempfile import mkstemp
+import tempfile
 from pathlib import Path
+from typing import Iterable, TextIO, Tuple
 
 import click
-from pandas import read_csv, DataFrame, set_option  # type: ignore
+import pandas as pd  # type: ignore
+from pandas import DataFrame  # type: ignore
 
 # Avoid pandas truncation of the commands description
-set_option("display.max_colwidth", -1)
+pd.set_option("display.max_colwidth", -1)
+
+
+def parse_dataframe_by_class_and_level(dataframe: DataFrame, buffer: TextIO) -> Iterable[Tuple[str, DataFrame]]:
+    """Iterate dataframe over Java classes and command level"""
+    for classname, cdf in dataframe.groupby("class"):
+        # Write the class name as a section title and drop the column
+        header = f"<h3>{classname}</h3>\n"
+        cdf = cdf.drop(columns='class')
+
+        if 'level' in cdf.columns:
+            for level, ldf in cdf.groupby("level"):
+                # Write the level name as a section title and drop the column
+                header_full = header + f"<h5>{level}</h5>\n"
+                ldf = ldf.drop(columns='level')
+                yield header_full, ldf
+        else:
+            yield header, cdf
+
+
+def clean_column(df: DataFrame, column_name: str) -> DataFrame:
+    """Replace NaNs with empty string or remove column if full of NaNs"""
+    if column_name in df.columns:
+        if df[column_name].isna().all():
+            df = df.drop(columns=column_name)
+        else:
+            df.fillna('', inplace=True)
+
+    return df
 
 
 def convert_dataframe(dataframe: DataFrame, output: Path) -> None:
@@ -15,26 +45,37 @@ def convert_dataframe(dataframe: DataFrame, output: Path) -> None:
     file_format = output.suffix[1:]
     try:
         # Create temporary file to store HTML table
-        tempf, temporary_file = mkstemp(text=True)
-        with open(tempf, "w") as tempfile:
-            dataframe.to_html(buf=tempfile, index=False)
+        tmpfile_ref, tmpfile_path = tempfile.mkstemp(text=True)
+        with open(tmpfile_ref, "w") as buffer:
+            for header, df in parse_dataframe_by_class_and_level(dataframe, buffer):
+                print(header, file=buffer)
+                clean_column(df, 'arguments')
+                clean_column(df, 'description')
+                df.sort_values('name', inplace=True)
+                df.to_html(buf=buffer, index=False)
         # Use pandoc to convert from HTML to DOCX
-        cmd = f"pandoc --from=html --to={file_format} -o {output} {temporary_file}"
+        cmd = f"pandoc --from=html --to={file_format} -o {output} {tmpfile_path}"
         print(cmd)
         subprocess.check_call(cmd, shell=True)
     finally:
         # Remove temp file
-        os.remove(temporary_file)
+        os.remove(tmpfile_path)
 
     print(f"{output} created.")
 
 
 def select_and_convert(df: DataFrame, csv_file: Path, ext: str, cmd_type=None) -> None:
-    if cmd_type is not None:
+    # ConfigurationParameters
+    if 'level' in df.columns:
+        cmd_type = None
+
+    if cmd_type is not None and cmd_type.upper() in ['QUERY', 'ACTION']:
         df = df.query(f"type == '{cmd_type.upper()}'")
         df = df.drop(columns="type")
-    suffix = f".{ext}" if cmd_type is None else f"_{cmd_type}.{ext}"
+
+    suffix = f".{ext}" if cmd_type is None else f"_{cmd_type.lower()}.{ext}"
     output = csv_file.with_name(csv_file.stem + suffix)
+
     convert_dataframe(df, output)
 
 
@@ -53,18 +94,7 @@ def select_and_convert(df: DataFrame, csv_file: Path, ext: str, cmd_type=None) -
 def main(csv_file, extension, split, sort):
     input_file = Path(csv_file)
 
-    commands: DataFrame = read_csv(input_file)
-
-    commands.replace("NORMAL", "NORM", inplace=True)
-    commands.replace("ENGINEERING1", "ENG1", inplace=True)
-    commands.replace("ENGINEERING2", "ENG2", inplace=True)
-    commands.replace("ENGINEERING3", "ENG3", inplace=True)
-
-    # Replace NaN with blank space
-    commands.fillna("", inplace=True)
-
-    if sort:
-        commands.sort_values("class", inplace=True)
+    commands: DataFrame = pd.read_csv(input_file)
 
     if split:
         select_and_convert(commands, input_file, extension, cmd_type='action')
