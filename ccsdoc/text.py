@@ -125,7 +125,7 @@ def is_config_parameter(line: str) -> bool:
     return line.startswith("@ConfigurationParameter") and not line.endswith("Changer")
 
 
-def extract_parameter_name_and_type(line: str) -> Tuple[str]:
+def extract_parameter_name_and_type(line: str) -> Tuple[str, str]:
     """Read configuration parameter name from text"""
     # Remove default value if any
     line, *_ = line.split("=")
