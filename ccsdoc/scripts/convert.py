@@ -9,7 +9,7 @@ import pandas as pd  # type: ignore
 from pandas import DataFrame  # type: ignore
 
 # Avoid pandas truncation of the commands description
-pd.set_option("display.max_colwidth", -1)
+pd.set_option("display.max_colwidth", None)
 
 
 def parse_dataframe_by_class_and_level(dataframe: DataFrame, buffer: TextIO) -> Iterable[Tuple[str, DataFrame]]:
