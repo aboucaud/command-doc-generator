@@ -8,6 +8,7 @@ from ccsdoc.text import extract_command_name
 from ccsdoc.text import extract_method_arguments
 from ccsdoc.text import extract_parameter_arguments
 from ccsdoc.text import extract_parameter_name_and_type
+from ccsdoc.text import extract_range_values
 from ccsdoc.text import is_command
 from ccsdoc.text import is_config_parameter
 from ccsdoc.text import is_correct_command_entry
@@ -138,11 +139,15 @@ def test_extract_parameters_arguments():
 def test_extract_parameters_arguments_with_range():
     expected = dict(
         range='"-4500000..4500000"',
-        lowval=-4500000,
-        highval=4500000,
         description='" carousel position when this socket is at standby"'
     )
     assert extract_parameter_arguments(CONFIG_PARAM_WITH_RANGE) == expected
+
+def test_extract_range_values():
+    assert extract_range_values('"-450..450"') == (-450, 450)
+    assert extract_range_values('-450..450') == (-450, 450)
+    assert extract_range_values('"..450"') == (None, 450)
+    assert extract_range_values('"0.."') == (0, None)
 
 def test_clean_command_level():
     assert clean_command_level("Command.ENGINEERING1") == "ENGINEERING1"

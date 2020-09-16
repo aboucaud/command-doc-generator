@@ -10,6 +10,7 @@ from ccsdoc.text import extract_command_arguments
 from ccsdoc.text import extract_method_arguments
 from ccsdoc.text import extract_parameter_name_and_type
 from ccsdoc.text import extract_parameter_arguments
+from ccsdoc.text import extract_range_values
 
 
 def parse_raw_text(
@@ -109,14 +110,16 @@ def extract_param_info(lines: List[str], idx: int) -> ConfigurationParameter:
     else:
         param_dict = {}
 
+    lowval, highval = extract_range_values(param_dict.get("range", ".."))
+
     definition = lines[idx + 1]
     param_name, ptype = extract_parameter_name_and_type(definition)
 
     return ConfigurationParameter(
         name=param_name,
         ptype=ptype,
-        low=param_dict.get("lowval", None),
-        high=param_dict.get("highval", None),
+        low=lowval,
+        high=highval,
         description=param_dict.get("description", None),
         is_deprecated=deprecated,
     )

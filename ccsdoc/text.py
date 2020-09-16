@@ -168,11 +168,6 @@ def extract_parameter_arguments(decorator: str) -> Dict[str, str]:
         arg, value = entry.split("=")
         args[arg.strip()] = value.strip()
 
-    if 'range' in args:
-        lowval, highval = extract_range_values(args['range'])
-        args['lowval'] = lowval
-        args['highval'] = highval
-
     return args
 
 
