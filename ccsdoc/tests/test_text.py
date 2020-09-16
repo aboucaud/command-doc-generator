@@ -138,6 +138,8 @@ def test_extract_parameters_arguments():
 def test_extract_parameters_arguments_with_range():
     expected = dict(
         range='"-4500000..4500000"',
+        lowval=-4500000,
+        highval=4500000,
         description='" carousel position when this socket is at standby"'
     )
     assert extract_parameter_arguments(CONFIG_PARAM_WITH_RANGE) == expected

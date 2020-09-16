@@ -150,6 +150,8 @@ def test_extract_param_info_basic():
     expected = ConfigurationParameter(
         name="myParam",
         ptype="int",
+        low=0,
+        high=500000,
         description="In milliseconds; if rotation lasts more than rotationTimeout rotation is halted and the subsystem goes in error state."
     )
     assert result == expected
@@ -161,6 +163,8 @@ def test_extract_param_info_multiline():
     expected = ConfigurationParameter(
         name="myParam",
         ptype="int",
+        low=0,
+        high=500000,
         description="In milliseconds; if rotation lasts more than rotationTimeout rotation is halted and the subsystem goes in error state."
     )
     assert result == expected
@@ -195,4 +199,3 @@ def test_parse_raw_text():
 
     for exp_param, res_param in zip(expected_parameters, res_parameters):
         assert exp_param == res_param
-

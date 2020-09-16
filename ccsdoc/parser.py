@@ -13,8 +13,9 @@ from ccsdoc.text import extract_parameter_arguments
 
 
 def parse_raw_text(
-        raw_text: str, filename: Optional[str] = None
-        ) -> Tuple[List[Command], List[ConfigurationParameter]]:
+        raw_text: str,
+        filename: Optional[str] = None
+) -> Tuple[List[Command], List[ConfigurationParameter]]:
     """Parse text directly from Java file"""
     lines = split_and_remove_whitespace(raw_text)
 
@@ -114,6 +115,8 @@ def extract_param_info(lines: List[str], idx: int) -> ConfigurationParameter:
     return ConfigurationParameter(
         name=param_name,
         ptype=ptype,
-        description=param_dict.get("description", " "),
+        low=param_dict.get("lowval", None),
+        high=param_dict.get("highval", None),
+        description=param_dict.get("description", None),
         is_deprecated=deprecated,
     )

@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 COMMAND_ARGS: List[str] = ["type", "level", "alias", "description", "autoAck", "timeout"]
 MANDATORY_COMMAND_ARGS: List[str] = ["type", "level", "description"]
@@ -168,4 +168,28 @@ def extract_parameter_arguments(decorator: str) -> Dict[str, str]:
         arg, value = entry.split("=")
         args[arg.strip()] = value.strip()
 
+    if 'range' in args:
+        lowval, highval = extract_range_values(args['range'])
+        args['lowval'] = lowval
+        args['highval'] = highval
+
     return args
+
+
+def extract_range_values(range_string: str) -> Tuple[Optional[int], Optional[int]]:
+    lowval = None
+    highval = None
+
+    values = range_string.strip('"').split('..')
+
+    try:
+        lowval = int(values[0])
+    except ValueError:
+        pass
+
+    try:
+        highval = int(values[1])
+    except ValueError:
+        pass
+
+    return (lowval, highval)
