@@ -3,6 +3,7 @@ CCS command documentation helper
 
 [![License][license-badge]][license-web]
 [![CI][ci-badge]][ci-web]
+[![PyPI][pypi-badge]][pypi-web]
 
 List the available commands information such as the name, the level, the type and the description.
 
@@ -10,6 +11,8 @@ List the available commands information such as the name, the level, the type an
 [ci-badge]: https://github.com/aboucaud/command-doc-generator/workflows/test%20suite/badge.svg?style=flat
 [license-badge]: https://img.shields.io/badge/license-BSD-blue.svg?style=flat
 [license-web]: https://choosealicense.com/licenses/bsd-3-clause/
+[pypi-badge]: https://badge.fury.io/py/ccsdoc.svg?style=flat
+[pypi-web]: https://pypi.org/project/ccsdoc/
 
 Usage
 -----
