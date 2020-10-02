@@ -38,8 +38,10 @@ def process_commands(filepath: Path, output: Optional[Path] = None) -> None:
 
 def print_info(commands: List[Command], parameters: List[ConfigurationParameter], class_name: str) -> None:
     print(f"{Color.BOLD.value}{class_name}:{Color.END.value}")
+    print(f"\n{Color.GREEN.value}Commands:{Color.END.value}")
     for command in commands:
         print(command)
+    print(f"\n{Color.BLUE.value}Configuration Parameters:{Color.END.value}")
     for param in parameters:
         print(param)
     print("")
