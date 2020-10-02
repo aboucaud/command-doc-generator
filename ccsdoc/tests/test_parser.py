@@ -38,9 +38,10 @@ COMMAND_WITH_OVERRIDE = [
     "@Override"
 ]
 CONFIG_PARAM_NO_ARGS = '@ConfigurationParameter'
-CONFIG_PARAM_WITH_ARGS = '@ConfigurationParameter(range = "0..500000", description = "in milliseconds; if rotation lasts more than rotationTimeout, rotation is halted and the subsystem goes in error state.")'
+CONFIG_PARAM_WITH_ARGS = '@ConfigurationParameter(range = "0..500000", units = "milliseconds", description = "in milliseconds; if rotation lasts more than rotationTimeout, rotation is halted and the subsystem goes in error state.")'
+CONFIG_PARAM_WITH_ARGS_NO_UNITS = '@ConfigurationParameter(range = "0..500000", description = "in milliseconds; if rotation lasts more than rotationTimeout, rotation is halted and the subsystem goes in error state.")'
 CONFIG_PARAM_MULTILINE = [
-    '@ConfigurationParameter(range = "0..500000",',
+    '@ConfigurationParameter(range = "0..500000", units = "milliseconds",',
     'description = "in milliseconds; if rotation lasts more than rotationTimeout, rotation is halted and the subsystem goes in error state.")'
 ]
 
@@ -139,12 +140,26 @@ def test_extract_param_info_no_args():
     result = extract_param_info(input_, param_position)
     expected = ConfigurationParameter(
         name="myParam",
-        ptype="void"
+        ptype="void",
     )
     assert result == expected
 
 def test_extract_param_info_basic():
     input_ = [CONFIG_PARAM_WITH_ARGS, "private int myParam"]
+    param_position = 0
+    result = extract_param_info(input_, param_position)
+    expected = ConfigurationParameter(
+        name="myParam",
+        ptype="int",
+        units="milliseconds",
+        low=0,
+        high=500000,
+        description="In milliseconds; if rotation lasts more than rotationTimeout rotation is halted and the subsystem goes in error state."
+    )
+    assert result == expected
+
+def test_extract_param_info_no_units_basic():
+    input_ = [CONFIG_PARAM_WITH_ARGS_NO_UNITS, "private int myParam"]
     param_position = 0
     result = extract_param_info(input_, param_position)
     expected = ConfigurationParameter(
@@ -163,6 +178,7 @@ def test_extract_param_info_multiline():
     expected = ConfigurationParameter(
         name="myParam",
         ptype="int",
+        units="milliseconds",
         low=0,
         high=500000,
         description="In milliseconds; if rotation lasts more than rotationTimeout rotation is halted and the subsystem goes in error state."

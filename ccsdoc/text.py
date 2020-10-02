@@ -2,7 +2,7 @@ from typing import Dict, List, Tuple, Optional
 
 COMMAND_ARGS: List[str] = ["type", "level", "alias", "description", "autoAck", "timeout"]
 MANDATORY_COMMAND_ARGS: List[str] = ["type", "level", "description"]
-PARAM_ARGS: List[str] = ["description", "range", "category", "is_final"]
+PARAM_ARGS: List[str] = ["description", "range", "units", "category", "is_final"]
 
 
 def is_command(line: str) -> bool:
