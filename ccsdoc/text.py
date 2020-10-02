@@ -32,12 +32,19 @@ def clean_command_type(text: str) -> str:
     return text
 
 
-def clean_description(text: str) -> str:
-    """Format description to linearize it from multiline definition"""
+def clean_quotes(text: str) -> str:
+    """Remove quotes from string"""
     if text.startswith('"'):
         text = text[1:]
     if text.endswith('"'):
         text = text[:-1]
+
+    return text
+
+
+def clean_description(text: str) -> str:
+    """Format description to linearize it from multiline definition"""
+    text = clean_quotes(text)
 
     text = text.replace('" + "', "")
     text = text.replace('"+ "', "")
