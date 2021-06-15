@@ -21,30 +21,27 @@ class Color(Enum):
     END = "\033[0m"
 
 
-def process_commands(filepath: Path, output: Optional[Path] = None) -> None:
+def process_commands(filepath: Path, output: Optional[Path] = None, commands_only: bool = False, params_only: bool = False) -> None:
     commands, parameters = parse_raw_text(filepath.read_text(), filepath.name)
     class_name = filepath.stem
-    if commands or parameters:
+    if commands and not params_only:
         if output is None:
-            print_info(commands, parameters, class_name)
+            print(f"\n{Color.BOLD.value}{class_name}:{Color.END.value} {filepath.as_posix()}\n")
+            for command in commands:
+                print(command)
+            print("")
         else:
-            if commands:
-                cmd_out = output.joinpath(output.name + "_cmd.csv")
-                save_to_file(cmd_out, commands, class_name)
-            if parameters:
-                param_out = output.joinpath(output.name + "_param.csv")
-                save_to_file(param_out, parameters, class_name)
-
-
-def print_info(commands: List[Command], parameters: List[ConfigurationParameter], class_name: str) -> None:
-    print(f"{Color.BOLD.value}{class_name}:{Color.END.value}")
-    print(f"\n{Color.GREEN.value}Commands:{Color.END.value}")
-    for command in commands:
-        print(command)
-    print(f"\n{Color.BLUE.value}Configuration Parameters:{Color.END.value}")
-    for param in parameters:
-        print(param)
-    print("")
+            cmd_out = output.joinpath(output.name + "_cmd.csv")
+            save_to_file(cmd_out, commands, class_name)
+    if parameters and not commands_only:
+        if output is None:
+            print(f"\n{Color.BOLD.value}{class_name}:{Color.END.value} {filepath.as_posix()}\n")
+            for param in parameters:
+                print(param)
+            print("")
+        else:
+            param_out = output.joinpath(output.name + "_param.csv")
+            save_to_file(param_out, parameters, class_name)
 
 
 def save_to_file(output: Path, infos: Union[List[Command], List[ConfigurationParameter]], class_name: str) -> None:
@@ -69,7 +66,21 @@ def save_to_file(output: Path, infos: Union[List[Command], List[ConfigurationPar
     show_default=True,
     help="If specified, produces a CSV catalogue of the available commands.",
 )
-def main(path: Path, output: Path):
+@click.option(
+    "--commands",
+    "commands_only",
+    type=click.BOOL,
+    is_flag=True,
+    help="If given, only prints commands info"
+)
+@click.option(
+    "--params",
+    "params_only",
+    type=click.BOOL,
+    is_flag=True,
+    help="If given, only prints configuration parameters info"
+)
+def main(path: Path, output: Path, commands_only: bool, params_only: bool):
     path = Path(path)
 
     if output is not None:
@@ -79,13 +90,16 @@ def main(path: Path, output: Path):
             sys.exit("Output dir already exists, cancelling action.")
 
         output.mkdir()
-        cmd_out = output.joinpath(output.name + "_cmd.csv")
-        cmd_out.write_text(COMMAND_HEADER)
-        param_out = output.joinpath(output.name + "_param.csv")
-        param_out.write_text(PARAM_HEADER)
+
+        if not params_only:
+            cmd_out = output.joinpath(output.name + "_cmd.csv")
+            cmd_out.write_text(COMMAND_HEADER)
+        if not commands_only:
+            param_out = output.joinpath(output.name + "_param.csv")
+            param_out.write_text(PARAM_HEADER)
 
     if not path.is_dir():
-        process_commands(path, output)
+        process_commands(path, output, commands_only, params_only)
     else:
         # Look for all .java files
         # targets: Iterator[Path] = list(path.rglob("*.java"))
@@ -101,4 +115,4 @@ def main(path: Path, output: Path):
         targets = filter(lambda x: x.name != "package-info.java", targets)
 
         for filepath in targets:
-            process_commands(filepath, output)
+            process_commands(filepath, output, commands_only, params_only)
