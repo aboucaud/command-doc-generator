@@ -117,6 +117,7 @@ def extract_param_info(lines: List[str], idx: int) -> ConfigurationParameter:
 
     return ConfigurationParameter(
         name=param_name,
+        category=param_dict.get("category", "UNKNOWN"),
         ptype=ptype,
         units=param_dict.get("units", None),
         low=lowval,
