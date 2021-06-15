@@ -56,6 +56,7 @@ class ConfigurationParameter(Parameter):
 
         text = text[:-1]
         text += f", category={self.category}"
+        text += f", units={self.units}"
         text += f", range=[{self.low}, {self.high}]"
         text += last_char
 
