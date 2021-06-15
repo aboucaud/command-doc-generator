@@ -38,10 +38,10 @@ COMMAND_WITH_OVERRIDE = [
     "@Override"
 ]
 CONFIG_PARAM_NO_ARGS = '@ConfigurationParameter'
-CONFIG_PARAM_WITH_ARGS = '@ConfigurationParameter(range = "0..500000", units = "milliseconds", description = "in milliseconds; if rotation lasts more than rotationTimeout, rotation is halted and the subsystem goes in error state.")'
-CONFIG_PARAM_WITH_ARGS_NO_UNITS = '@ConfigurationParameter(range = "0..500000", description = "in milliseconds; if rotation lasts more than rotationTimeout, rotation is halted and the subsystem goes in error state.")'
+CONFIG_PARAM_WITH_ARGS = '@ConfigurationParameter(range = "0..500000", category = "carousel", units = "milliseconds", description = "in milliseconds; if rotation lasts more than rotationTimeout, rotation is halted and the subsystem goes in error state.")'
+CONFIG_PARAM_WITH_ARGS_NO_UNITS = '@ConfigurationParameter(range = "0..500000", category = "carousel", description = "in milliseconds; if rotation lasts more than rotationTimeout, rotation is halted and the subsystem goes in error state.")'
 CONFIG_PARAM_MULTILINE = [
-    '@ConfigurationParameter(range = "0..500000", units = "milliseconds",',
+    '@ConfigurationParameter(range = "0..500000", units = "milliseconds", category = "carousel", ',
     'description = "in milliseconds; if rotation lasts more than rotationTimeout, rotation is halted and the subsystem goes in error state.")'
 ]
 
@@ -141,6 +141,7 @@ def test_extract_param_info_no_args():
     expected = ConfigurationParameter(
         name="myParam",
         ptype="void",
+        category="UNKNOWN"
     )
     assert result == expected
 
@@ -151,6 +152,7 @@ def test_extract_param_info_basic():
     expected = ConfigurationParameter(
         name="myParam",
         ptype="int",
+        category="carousel",
         units="milliseconds",
         low=0,
         high=500000,
@@ -165,6 +167,7 @@ def test_extract_param_info_no_units_basic():
     expected = ConfigurationParameter(
         name="myParam",
         ptype="int",
+        category="carousel",
         low=0,
         high=500000,
         description="In milliseconds; if rotation lasts more than rotationTimeout rotation is halted and the subsystem goes in error state."
@@ -178,6 +181,7 @@ def test_extract_param_info_multiline():
     expected = ConfigurationParameter(
         name="myParam",
         ptype="int",
+        category="carousel",
         units="milliseconds",
         low=0,
         high=500000,
@@ -193,7 +197,8 @@ def test_extract_param_info_real():
     expected = ConfigurationParameter(
         name="deltaPosition",
         ptype="int",
-        description="Position margin to terminate movement."
+        description="Position margin to terminate movement.",
+        category="UNKNOWN"
     )
     assert result == expected
 
@@ -206,7 +211,7 @@ def test_parse_raw_text():
         )
     ]
     expected_parameters = [
-        ConfigurationParameter(name="deltaPosition", ptype="int", description="Position margin to terminate movement.")
+        ConfigurationParameter(name="deltaPosition", ptype="int", description="Position margin to terminate movement.", category="UNKNOWN")
     ]
     res_commands, res_parameters = parse_raw_text(SPACED_TEXT_RAW)
 

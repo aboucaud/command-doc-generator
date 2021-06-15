@@ -26,73 +26,73 @@ def test_parameter_nodescription():
     assert cmd.to_csv("Toto") == f"Toto,{NAME},{TYPE},\n"
 
 def test_configparameter_norange():
-    cmd = ConfigurationParameter(name=NAME, ptype=TYPE, units=UNITS, description=DESCRIPTION, category=CATEGORY)
+    cmd = ConfigurationParameter(name=NAME, ptype=TYPE, category=CATEGORY, units=UNITS, description=DESCRIPTION)
 
     assert repr(cmd) == f"{TYPE} {NAME}: {DESCRIPTION}"
-    assert str(cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, desc='{DESCRIPTION}', units={UNITS}, range=[UNDEFINED, UNDEFINED]]"
-    assert cmd.to_csv("Toto") == f"Toto,{NAME},{TYPE},{UNITS},UNDEFINED,UNDEFINED,{DESCRIPTION}\n"
+    assert str(cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, desc='{DESCRIPTION}', category={CATEGORY}, units={UNITS}, range=[UNDEFINED, UNDEFINED]]"
+    assert cmd.to_csv("Toto") == f"Toto,{NAME},{TYPE},{CATEGORY},{UNITS},UNDEFINED,UNDEFINED,{DESCRIPTION}\n"
 
 def test_configparameter_nounits():
-    cmd = ConfigurationParameter(name=NAME, ptype=TYPE, description=DESCRIPTION)
+    cmd = ConfigurationParameter(name=NAME, ptype=TYPE, category=CATEGORY, description=DESCRIPTION)
 
     assert repr(cmd) == f"{TYPE} {NAME}: {DESCRIPTION}"
-    assert str(cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, desc='{DESCRIPTION}', units=UNDEFINED, range=[UNDEFINED, UNDEFINED]]"
-    assert cmd.to_csv("Toto") == f"Toto,{NAME},{TYPE},UNDEFINED,UNDEFINED,UNDEFINED,{DESCRIPTION}\n"
+    assert str(cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, desc='{DESCRIPTION}', category={CATEGORY}, units=UNDEFINED, range=[UNDEFINED, UNDEFINED]]"
+    assert cmd.to_csv("Toto") == f"Toto,{NAME},{TYPE},{CATEGORY},UNDEFINED,UNDEFINED,UNDEFINED,{DESCRIPTION}\n"
 
 def test_configparameter_norange_nounits():
-    cmd = ConfigurationParameter(name=NAME, ptype=TYPE, description=DESCRIPTION)
+    cmd = ConfigurationParameter(name=NAME, ptype=TYPE, category=CATEGORY, description=DESCRIPTION)
 
     assert repr(cmd) == f"{TYPE} {NAME}: {DESCRIPTION}"
-    assert str(cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, desc='{DESCRIPTION}', units=UNDEFINED, range=[UNDEFINED, UNDEFINED]]"
-    assert cmd.to_csv("Toto") == f"Toto,{NAME},{TYPE},UNDEFINED,UNDEFINED,UNDEFINED,{DESCRIPTION}\n"
+    assert str(cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, desc='{DESCRIPTION}', category={CATEGORY}, units=UNDEFINED, range=[UNDEFINED, UNDEFINED]]"
+    assert cmd.to_csv("Toto") == f"Toto,{NAME},{TYPE},{CATEGORY},UNDEFINED,UNDEFINED,UNDEFINED,{DESCRIPTION}\n"
 
 
 def test_configparameter_nohigh():
     cmd = ConfigurationParameter(
-        name=NAME, ptype=TYPE, low=RANGE_LOW, units=UNITS, description=DESCRIPTION)
+        name=NAME, ptype=TYPE, category=CATEGORY, low=RANGE_LOW, units=UNITS, description=DESCRIPTION)
 
     assert repr(cmd) == f"{TYPE} {NAME}: {DESCRIPTION}"
     assert str(
-        cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, desc='{DESCRIPTION}', units={UNITS}, range=[{RANGE_LOW}, UNDEFINED]]"
+        cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, desc='{DESCRIPTION}', category={CATEGORY}, units={UNITS}, range=[{RANGE_LOW}, UNDEFINED]]"
     assert cmd.to_csv(
-        "Toto") == f"Toto,{NAME},{TYPE},{UNITS},{RANGE_LOW},UNDEFINED,{DESCRIPTION}\n"
+        "Toto") == f"Toto,{NAME},{TYPE},{CATEGORY},{UNITS},{RANGE_LOW},UNDEFINED,{DESCRIPTION}\n"
 
 
 def test_configparameter_nolow():
     cmd = ConfigurationParameter(
-        name=NAME, ptype=TYPE, high=RANGE_HIGH, units=UNITS, description=DESCRIPTION)
+        name=NAME, ptype=TYPE, category=CATEGORY, high=RANGE_HIGH, units=UNITS, description=DESCRIPTION)
 
     assert repr(cmd) == f"{TYPE} {NAME}: {DESCRIPTION}"
     assert str(
-        cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, desc='{DESCRIPTION}', units={UNITS}, range=[UNDEFINED, {RANGE_HIGH}]]"
+        cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, desc='{DESCRIPTION}', category={CATEGORY}, units={UNITS}, range=[UNDEFINED, {RANGE_HIGH}]]"
     assert cmd.to_csv(
-        "Toto") == f"Toto,{NAME},{TYPE},{UNITS},UNDEFINED,{RANGE_HIGH},{DESCRIPTION}\n"
+        "Toto") == f"Toto,{NAME},{TYPE},{CATEGORY},{UNITS},UNDEFINED,{RANGE_HIGH},{DESCRIPTION}\n"
 
 def test_configparameter_nodescription():
-    cmd = ConfigurationParameter(name=NAME, ptype=TYPE, low=RANGE_LOW, high=RANGE_HIGH, units=UNITS, description=None)
+    cmd = ConfigurationParameter(name=NAME, ptype=TYPE, category=CATEGORY, low=RANGE_LOW, high=RANGE_HIGH, units=UNITS, description=None)
 
     assert repr(cmd) == f"{TYPE} {NAME}"
     assert str(
-        cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, units={UNITS}, range=[{RANGE_LOW}, {RANGE_HIGH}]]"
+        cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, category={CATEGORY}, units={UNITS}, range=[{RANGE_LOW}, {RANGE_HIGH}]]"
     assert cmd.to_csv(
-        "Toto") == f"Toto,{NAME},{TYPE},{UNITS},{RANGE_LOW},{RANGE_HIGH},\n"
+        "Toto") == f"Toto,{NAME},{TYPE},{CATEGORY},{UNITS},{RANGE_LOW},{RANGE_HIGH},\n"
 
 def test_configparameter_deprecated():
-    cmd = ConfigurationParameter(name=NAME, ptype=TYPE, units=UNITS, description=DESCRIPTION, is_deprecated=True)
+    cmd = ConfigurationParameter(name=NAME, ptype=TYPE, category=CATEGORY, units=UNITS, description=DESCRIPTION, is_deprecated=True)
 
     assert repr(cmd) == f"{TYPE} {NAME}: {DESCRIPTION}"
     assert str(
-        cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, desc='{DESCRIPTION}', units={UNITS}, range=[UNDEFINED, UNDEFINED]](DEPRECATED)"
+        cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, desc='{DESCRIPTION}', category={CATEGORY}, units={UNITS}, range=[UNDEFINED, UNDEFINED]](DEPRECATED)"
     assert cmd.to_csv(
-        "Toto") == f"Toto,{NAME},{TYPE},{UNITS},UNDEFINED,UNDEFINED,{DESCRIPTION}\n"
+        "Toto") == f"Toto,{NAME},{TYPE},{CATEGORY},{UNITS},UNDEFINED,UNDEFINED,{DESCRIPTION}\n"
 
 def test_configparameter_nodescription_deprecated():
-    cmd = ConfigurationParameter(name=NAME, ptype=TYPE, units=UNITS, description=None, is_deprecated=True)
+    cmd = ConfigurationParameter(name=NAME, ptype=TYPE, category=CATEGORY, units=UNITS, description=None, is_deprecated=True)
 
     assert repr(cmd) == f"{TYPE} {NAME}"
     assert str(
-        cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, units={UNITS}, range=[UNDEFINED, UNDEFINED]](DEPRECATED)"
-    assert cmd.to_csv("Toto") == f"Toto,{NAME},{TYPE},{UNITS},UNDEFINED,UNDEFINED,\n"
+        cmd) == f"ConfigurationParameter[name={NAME}, type={TYPE}, category={CATEGORY}, units={UNITS}, range=[UNDEFINED, UNDEFINED]](DEPRECATED)"
+    assert cmd.to_csv("Toto") == f"Toto,{NAME},{TYPE},{CATEGORY},{UNITS},UNDEFINED,UNDEFINED,\n"
 
 def test_argument_simple():
     cmd = Argument(name=NAME, ptype=TYPE)
