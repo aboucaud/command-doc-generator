@@ -3,7 +3,7 @@ from typing import Optional
 from ccsdoc.text import clean_description, clean_quotes
 
 PARAM_HEADER: str = "class,name,type,description\n"
-CONFIG_PARAM_HEADER: str = "class,name,type,units,low,high,description\n"
+CONFIG_PARAM_HEADER: str = "class,name,category,type,units,low,high,description\n"
 
 
 class Parameter:
@@ -41,8 +41,9 @@ class Parameter:
 
 
 class ConfigurationParameter(Parameter):
-    def __init__(self, name: str, ptype: str, units: Optional[str] = None, low: Optional[int] = None, high: Optional[int] = None, description: Optional[str] = None, is_deprecated: bool = False) -> None:
+    def __init__(self, name: str, ptype: str, category: str, units: Optional[str] = None, low: Optional[int] = None, high: Optional[int] = None, description: Optional[str] = None, is_deprecated: bool = False) -> None:
         Parameter.__init__(self, name, ptype, description)
+        self.category = category.replace('"', '')
         self.units = clean_quotes(units) if units is not None else "UNDEFINED"
         self.low = str(low) if low is not None else "UNDEFINED"
         self.high = str(high) if high is not None else "UNDEFINED"
@@ -54,7 +55,7 @@ class ConfigurationParameter(Parameter):
         last_char = text[-1]
 
         text = text[:-1]
-        text += f", units='{self.units}'"
+        text += f", category={self.category}"
         text += f", range=[{self.low}, {self.high}]"
         text += last_char
 
@@ -68,6 +69,7 @@ class ConfigurationParameter(Parameter):
             f"{class_name},"
             f"{self.name},"
             f"{self.type},"
+            f"{self.category},"
             f"{self.units},"
             f"{self.low},"
             f"{self.high},"
