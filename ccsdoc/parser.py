@@ -25,10 +25,10 @@ def parse_raw_text(
         try:
             command = extract_command_info(lines, idx)
             commands.append(command)
-        except Exception as expt:
+        except ValueError as exception:
             print(
                 f"=> {filename + ': ' if filename else ''}"
-                f"command issue at line {idx}: {expt}"
+                f"command issue at line {idx}: {exception}"
             )
 
     params = []
@@ -38,10 +38,10 @@ def parse_raw_text(
             if parameter.deprecated:
                 continue
             params.append(parameter)
-        except Exception as expt:
+        except ValueError as exception:
             print(
                 f"=> {filename + ': ' if filename else ''}",
-                f"config parameter issue at line {idx}: {expt}"
+                f"config parameter issue at line {idx}: {exception}"
             )
 
     return commands, params
@@ -110,7 +110,7 @@ def extract_param_info(lines: List[str], idx: int) -> ConfigurationParameter:
     else:
         param_dict = {}
 
-    lowval, highval = extract_range_values(param_dict.get("range", ".."))
+    low_val, high_val = extract_range_values(param_dict.get("range", ".."))
 
     definition = lines[idx + 1]
     param_name, ptype = extract_parameter_name_and_type(definition)
@@ -120,8 +120,8 @@ def extract_param_info(lines: List[str], idx: int) -> ConfigurationParameter:
         category=param_dict.get("category", "UNKNOWN"),
         ptype=ptype,
         units=param_dict.get("units", None),
-        low=lowval,
-        high=highval,
+        low=low_val,
+        high=high_val,
         description=param_dict.get("description", None),
         is_deprecated=deprecated,
     )

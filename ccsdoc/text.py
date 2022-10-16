@@ -15,8 +15,8 @@ def is_correct_command_entry(text: str) -> bool:
     for arg in COMMAND_ARGS:
         if text.strip().startswith(arg):
             return True
-    else:
-        return False
+
+    return False
 
 
 def clean_command_level(text: str) -> str:
@@ -112,7 +112,7 @@ def extract_command_arguments(decorator: str) -> Dict[str, str]:
         args[arg.strip()] = value.strip()
 
     for key in MANDATORY_COMMAND_ARGS:
-        if key not in list(args.keys()):
+        if key not in list(args):
             raise ValueError(f"Missing command argument '{key}'.")
 
     return args
@@ -123,8 +123,8 @@ def is_correct_parameter_entry(text: str) -> bool:
     for arg in PARAM_ARGS:
         if text.strip().startswith(arg):
             return True
-    else:
-        return False
+
+    return False
 
 
 def is_config_parameter(line: str) -> bool:
@@ -179,19 +179,20 @@ def extract_parameter_arguments(decorator: str) -> Dict[str, str]:
 
 
 def extract_range_values(range_string: str) -> Tuple[Optional[int], Optional[int]]:
-    lowval = None
-    highval = None
+    """Extract the authorized range of values from parameter definition"""
+    low_val = None
+    high_val = None
 
     values = range_string.strip('"').split('..')
 
     try:
-        lowval = int(values[0])
+        low_val = int(values[0])
     except ValueError:
         pass
 
     try:
-        highval = int(values[1])
+        high_val = int(values[1])
     except ValueError:
         pass
 
-    return (lowval, highval)
+    return (low_val, high_val)
