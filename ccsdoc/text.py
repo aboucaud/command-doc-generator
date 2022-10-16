@@ -150,7 +150,8 @@ def extract_parameter_name_and_type(line: str) -> Tuple[str, str]:
 def extract_parameter_arguments(decorator: str) -> Dict[str, str]:
     """Read configuration parameter arguments from text"""
     # Remove the @ConfigurationParameter(...)
-    content = decorator[24:-1]
+    left = decorator.index("(")
+    content = decorator[left + 1:-1]
 
     # Separate arguments
     entries = content.split(",")
