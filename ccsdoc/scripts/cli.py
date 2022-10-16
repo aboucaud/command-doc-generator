@@ -11,6 +11,8 @@ import click
 
 from ccsdoc.scripts import parse
 from ccsdoc.scripts import convert
+from ccsdoc.scripts import telemetry
+from ccsdoc.scripts import attributes
 
 
 @click.group(context_settings={"help_option_names": ["-h", "--help"]}, help=__doc__)
@@ -20,3 +22,5 @@ def cli():
 
 cli.add_command(parse.main)
 cli.add_command(convert.main)
+cli.add_command(telemetry.main)
+cli.add_command(attributes.main)

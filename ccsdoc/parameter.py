@@ -4,6 +4,7 @@ from ccsdoc.text import clean_description, clean_quotes
 
 PARAM_HEADER: str = "class,name,type,description\n"
 CONFIG_PARAM_HEADER: str = "class,name,category,type,units,low,high,description\n"
+DATA_ATTRIBUTE_HEADER: str = "class,name,type,units,description\n"
 
 
 class Parameter:
@@ -80,5 +81,36 @@ class ConfigurationParameter(Parameter):
 
 
 class Argument(Parameter):
+    def __init__(self, name: str, ptype: str) -> None:
+        Parameter.__init__(self, name, ptype, description=None)
+
+
+class DataAttribute(Parameter):
+    def __init__(self, name: str, ptype: str, description: Optional[str] = None, units: Optional[str] = None) -> None:
+        Parameter.__init__(self, name, ptype, description)
+        self.units = clean_quotes(units) if units else "UNDEFINED"
+
+    def __str__(self) -> str:
+        text = super().__str__()
+
+        last_char = text[-1]
+
+        text = text[:-1]
+        text += f", units={self.units}"
+        text += last_char
+
+        return text
+
+    def to_csv(self, class_name: str) -> str:
+        return (
+            f"{class_name},"
+            f"{self.name},"
+            f"{self.type},"
+            f"{self.units},"
+            f"{self.description}"
+            "\n"
+        )
+
+class FCSTelemetryParameter(Parameter):
     def __init__(self, name: str, ptype: str) -> None:
         Parameter.__init__(self, name, ptype, description=None)

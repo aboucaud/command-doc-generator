@@ -3,6 +3,7 @@ from typing import Dict, List, Tuple, Optional
 COMMAND_ARGS: List[str] = ["type", "level", "alias", "description", "autoAck", "timeout"]
 MANDATORY_COMMAND_ARGS: List[str] = ["type", "level", "description"]
 PARAM_ARGS: List[str] = ["description", "range", "units", "category", "is_final"]
+DATA_ATTRIBUTE_ARGS: List[str] = ["description", "units"]
 
 
 def is_command(line: str) -> bool:
@@ -197,3 +198,41 @@ def extract_range_values(range_string: str) -> Tuple[Optional[int], Optional[int
         pass
 
     return (low_val, high_val)
+
+
+def is_data_attribute(line: str) -> bool:
+    """Does the line refer to a data attribute"""
+    return line.startswith("@DataAttributes")
+
+
+def is_correct_data_attribute_entry(text: str) -> bool:
+    """Is the keyword a valid command data attribute"""
+    for arg in DATA_ATTRIBUTE_ARGS:
+        if text.strip().startswith(arg):
+            return True
+
+    return False
+
+
+def is_private_parameter(line: str) -> bool:
+    """Is the parameter private"""
+    strip_line = line.strip()
+    if not strip_line:
+        return False
+
+    if not strip_line.startswith("private"):
+        return False
+
+    return True
+
+
+def is_static_parameter(text: str) -> bool:
+    """Is the parameter static"""
+    strip_line = text.strip()
+    if not strip_line:
+        return False
+
+    if not "static" in strip_line.split():
+        return False
+
+    return True
