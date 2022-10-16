@@ -98,7 +98,7 @@ def test_extract_command_info_basic():
     cmd_position = 0
     result = extract_command_info(input_, cmd_position)
     expected = Command(
-        name="myCommand", cmdtype="ACTION", level="ENGINEERING1",
+        name="myCommand", cmd_type="ACTION", level="ENGINEERING1",
         description="Connect the loader hardware.", args=[]
     )
     assert result == expected
@@ -108,7 +108,7 @@ def test_extract_command_info_multiline():
     cmd_position = 0
     result = extract_command_info(input_, cmd_position)
     expected = Command(
-        name="myCommand", cmdtype="QUERY", level="NORMAL",
+        name="myCommand", cmd_type="QUERY", level="NORMAL",
         description="First line. Second line.", args=[]
     )
     assert result == expected
@@ -118,7 +118,7 @@ def test_extract_command_info_override():
     cmd_position = 0
     result = extract_command_info(input_, cmd_position)
     expected = Command(
-        name="myCommand", cmdtype="ACTION", level="ENGINEERING1",
+        name="myCommand", cmd_type="ACTION", level="ENGINEERING1",
         description="Connect the loader hardware.", args=[]
     )
     assert result == expected
@@ -128,7 +128,7 @@ def test_extract_command_info_real():
     cmd_position = 5
     result = extract_command_info(input_, cmd_position)
     expected = Command(
-        name="setFilter", cmdtype="ACTION", level="NORMAL",
+        name="setFilter", cmd_type="ACTION", level="NORMAL",
         description="Set filter.", args=[Argument(name="filterId", ptype="int")]
     )
     assert result == expected
@@ -206,7 +206,7 @@ def test_extract_param_info_real():
 def test_parse_raw_text():
     expected_commands = [
         Command(
-            name="setFilter", cmdtype="ACTION", level="NORMAL",
+            name="setFilter", cmd_type="ACTION", level="NORMAL",
             description="Set filter.", args=[Argument(name="filterId", ptype="int")]
         )
     ]

@@ -9,9 +9,9 @@ COMMAND_HEADER: str = "class,name,type,level,description,arguments\n"
 
 
 class Command:
-    def __init__(self, name: str, cmdtype: str, level: str, description: str, args: Optional[List[Argument]] = None) -> None:
+    def __init__(self, name: str, cmd_type: str, level: str, description: str, args: Optional[List[Argument]] = None) -> None:
         self.name = name
-        self.type = clean_command_type(cmdtype)
+        self.type = clean_command_type(cmd_type)
         self.level = clean_command_level(level)
         self.description = clean_description(description)
         self.args = args if args else []

@@ -88,7 +88,7 @@ def extract_command_info(lines: List[str], idx: int) -> Command:
 
     return Command(
         name=command_name,
-        cmdtype=command_dict.get("type", ""),
+        cmd_type=command_dict.get("type", ""),
         level=command_dict.get("level", ""),
         description=command_dict.get("description", ""),
         args=arguments,
