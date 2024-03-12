@@ -86,9 +86,10 @@ class Argument(Parameter):
 
 
 class DataAttribute(Parameter):
-    def __init__(self, name: str, ptype: str, description: Optional[str] = None, units: Optional[str] = None) -> None:
+    def __init__(self, name: str, ptype: str, description: Optional[str] = None, units: Optional[str] = None, skip: Optional[bool] = False) -> None:
         Parameter.__init__(self, name, ptype, description)
         self.units = clean_quotes(units) if units else "UNDEFINED"
+        self.skip = skip
 
     def __str__(self) -> str:
         text = super().__str__()
@@ -98,6 +99,8 @@ class DataAttribute(Parameter):
         text = text[:-1]
         text += f", units={self.units}"
         text += last_char
+        if self.skip:
+            text += f" **ONLY FOR GUI**"
 
         return text
 
@@ -110,7 +113,3 @@ class DataAttribute(Parameter):
             f"{self.description}"
             "\n"
         )
-
-class FCSTelemetryParameter(Parameter):
-    def __init__(self, name: str, ptype: str) -> None:
-        Parameter.__init__(self, name, ptype, description=None)

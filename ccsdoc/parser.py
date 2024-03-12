@@ -3,13 +3,11 @@ from typing import List, Tuple, Optional
 from ccsdoc.command import Command
 from ccsdoc.parameter import Argument
 from ccsdoc.parameter import ConfigurationParameter
-from ccsdoc.parameter import FCSTelemetryParameter
 from ccsdoc.parameter import DataAttribute
 from ccsdoc.text import is_command
 from ccsdoc.text import is_config_parameter
-from ccsdoc.text import is_private_parameter
 from ccsdoc.text import is_data_attribute
-from ccsdoc.text import is_static_parameter
+from ccsdoc.text import is_only_for_gui
 from ccsdoc.text import extract_command_name
 from ccsdoc.text import extract_command_arguments
 from ccsdoc.text import extract_method_arguments
@@ -132,57 +130,6 @@ def extract_param_info(lines: List[str], idx: int) -> ConfigurationParameter:
     )
 
 
-def extract_telemetry_info(lines: List[str], idx: int) -> FCSTelemetryParameter:
-    """Create a DataAttribute or FCSTelemetryParameter instance from text"""
-    param_decorator = lines[idx]
-    if "(" in param_decorator:
-        while not param_decorator.endswith(")"):
-            idx += 1
-            param_decorator += lines[idx]
-
-        param_dict = extract_parameter_arguments(param_decorator)
-        definition = lines[idx + 1]
-        param_name, ptype = extract_parameter_name_and_type(definition)
-        param = DataAttribute(
-            name=param_name,
-            ptype=ptype,
-            units=param_dict.get("units", None),
-            description=param_dict.get("description", None)
-        )
-    else:
-        param_name, ptype = extract_parameter_name_and_type(param_decorator)
-        param = FCSTelemetryParameter(name=param_name, ptype=ptype)
-
-    return param
-
-
-def get_private_param_position(lines: List[str]) -> List[int]:
-    """Get line numbers of published telemetry parameters"""
-    return [
-        idx for idx, line in enumerate(lines)
-        if is_private_parameter(line) and not is_static_parameter(line)
-    ]
-
-
-def parse_telemetry_params(raw_text: str, filename: Optional[str] = None) -> List[FCSTelemetryParameter]:
-    """Parse telemetry params directly from Java file"""
-    lines = split_and_remove_whitespace(raw_text)
-
-    params = []
-    for idx in get_private_param_position(lines):
-        try:
-            parameter = extract_telemetry_info(lines, idx)
-            params.append(parameter)
-        except Exception as exception:
-            print(
-                f"=> {filename + ': ' if filename else ''}",
-                f"telemetry parameter issue at line {idx}: {exception}"
-            )
-            raise exception
-
-    return params
-
-
 def get_data_attribute_position(lines: List[str]) -> List[int]:
     """Get line numbers of published telemetry parameters"""
     return [
@@ -191,43 +138,50 @@ def get_data_attribute_position(lines: List[str]) -> List[int]:
     ]
 
 
-def extract_new_telemetry_info(lines: List[str], idx: int) -> DataAttribute:
+def extract_trending_info(lines: List[str], idx: int) -> DataAttribute:
     """Create a DataAttribute instance from text"""
     param_decorator = lines[idx]
-    if "(" in param_decorator:
-        while not param_decorator.endswith(")"):
-            idx += 1
-            param_decorator += lines[idx]
+    skip = False
 
-        param_dict = extract_parameter_arguments(param_decorator)
-        definition = lines[idx + 1]
-        param_name, ptype = extract_parameter_name_and_type(definition)
-        param = DataAttribute(
-            name=param_name,
-            ptype=ptype,
-            description=param_dict.get("description", None),
-            units=param_dict.get("units", None)
-        )
-    else:
-        param_name, ptype = extract_parameter_name_and_type(param_decorator)
-        param = FCSTelemetryParameter(name=param_name, ptype=ptype)
+    if not "(" in param_decorator:
+        raise ValueError("Missing description for DataAttribute")
+
+    while not param_decorator.endswith(")"):
+        idx += 1
+        param_decorator += lines[idx]
+
+    param_dict = extract_parameter_arguments(param_decorator)
+    definition = lines[idx + 1]
+    if is_only_for_gui(lines[idx - 1]):
+        skip = True
+    elif is_only_for_gui(lines[idx + 1]):
+        skip = True
+        definition = lines[idx + 2]
+    param_name, ptype = extract_parameter_name_and_type(definition)
+    param = DataAttribute(
+        name=param_name,
+        ptype=ptype,
+        description=param_dict.get("description", None),
+        units=param_dict.get("units", None),
+        skip=skip
+    )
 
     return param
 
 
-def parse_new_telemetry_params(raw_text: str, filename: Optional[str] = None) -> List[DataAttribute]:
+def parse_trending_params(raw_text: str, filename: Optional[str] = None) -> List[DataAttribute]:
     """Parse telemetry params directly from Java file"""
     lines = split_and_remove_whitespace(raw_text)
 
     params = []
     for idx in get_data_attribute_position(lines):
         try:
-            parameter = extract_new_telemetry_info(lines, idx)
+            parameter = extract_trending_info(lines, idx)
             params.append(parameter)
-        except Exception as exception:
+        except ValueError as exception:
             print(
                 f"=> {filename + ': ' if filename else ''}",
-                f"telemetry parameter issue at line {idx}: {exception}"
+                f"trending parameter issue at line {idx}: {exception}"
             )
             raise exception
 

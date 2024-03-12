@@ -214,25 +214,6 @@ def is_correct_data_attribute_entry(text: str) -> bool:
     return False
 
 
-def is_private_parameter(line: str) -> bool:
-    """Is the parameter private"""
-    strip_line = line.strip()
-    if not strip_line:
-        return False
-
-    if not strip_line.startswith("private"):
-        return False
-
-    return True
-
-
-def is_static_parameter(text: str) -> bool:
-    """Is the parameter static"""
-    strip_line = text.strip()
-    if not strip_line:
-        return False
-
-    if not "static" in strip_line.split():
-        return False
-
-    return True
+def is_only_for_gui(line: str) -> bool:
+    """Is the value only used for the GUI"""
+    return line.startswith("@SkipEncoding") or line.startswith("@DoNotTrend")
