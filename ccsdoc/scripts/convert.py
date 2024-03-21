@@ -11,6 +11,8 @@ from pandas import DataFrame  # type: ignore
 # Avoid pandas truncation of the commands description
 pd.set_option("display.max_colwidth", None)
 
+CMD_LEVELS = ['NORMAL', 'ENGINEERING_ROUTINE', 'ENGINEERING_ADVANCED', 'ENGINEERING_EXPERT']
+
 
 def parse_dataframe_by_class_and_level(dataframe: DataFrame, buffer: TextIO) -> Iterable[Tuple[str, DataFrame]]:
     """Iterate dataframe over Java classes and command level"""
@@ -20,9 +22,14 @@ def parse_dataframe_by_class_and_level(dataframe: DataFrame, buffer: TextIO) -> 
         cdf = cdf.drop(columns='class')
 
         if 'level' in cdf.columns:
-            for level, ldf in cdf.groupby("level"):
+            # for level, ldf in cdf.groupby("level"):
+            for level in CMD_LEVELS:  # use this instead of the above to select the ordering of the levels
                 # Write the level name as a section title and drop the column
                 header_full = header + f"<h5>{level}</h5>\n"
+                ldf = cdf[cdf.level == level]
+                # There might not be any command for the level now that they are hardcoded
+                if ldf.empty:
+                    continue
                 ldf = ldf.drop(columns='level')
                 yield header_full, ldf
         else:
