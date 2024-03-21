@@ -56,7 +56,7 @@ def convert_dataframe(dataframe: DataFrame, output: Path) -> None:
         with open(tmpfile_ref, "w") as buffer:
             for header, df in parse_dataframe_by_class_and_level(dataframe, buffer):
                 print(header, file=buffer)
-                df = clean_column(df, 'arguments')
+                # df = clean_column(df, 'arguments')
                 df = clean_column(df, 'description')
                 df.sort_values('name', inplace=True)
                 df.to_html(buf=buffer, index=False)
