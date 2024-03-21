@@ -59,7 +59,7 @@ def convert_dataframe(dataframe: DataFrame, output: Path) -> None:
                 # df = clean_column(df, 'arguments')
                 df = clean_column(df, 'description')
                 df.sort_values('name', inplace=True)
-                df.to_html(buf=buffer, index=False)
+                df.to_html(buf=buffer, index=False, header=False)
         # Use pandoc to convert from HTML to DOCX
         cmd = f"pandoc --from=html --to={file_format} -o {output} {tmpfile_path}"
         print(cmd)
@@ -85,6 +85,7 @@ def _select_cmd_type(df: DataFrame, cmd_type: str) -> DataFrame:
     """Select a specific type of commands"""
     df = df.query(f"type == '{cmd_type.upper()}'")
     df = df.drop(columns="type")
+    df = df.drop(columns="arguments")
 
     return df
 
